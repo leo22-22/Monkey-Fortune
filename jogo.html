@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Jogo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -71,6 +72,45 @@
       color: #0073e6;
       margin-top: 20px;
     }
+
+    /* -------- Versão Mobile -------- */
+    @media (max-width: 600px) {
+      body {
+        padding: 15px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      .saldo {
+        font-size: 18px;
+      }
+
+      input, button {
+        width: 90%;
+        max-width: 100%;
+        font-size: 16px;
+        margin: 8px auto;
+      }
+
+      .chave-pix-container input {
+        width: 90%;
+      }
+
+      .aviso {
+        font-size: 13px;
+        padding: 10px;
+      }
+
+      .mensagem-email {
+        font-size: 14px;
+      }
+
+      .money-icon {
+        font-size: 20px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -120,9 +160,9 @@
 
       usuario.saldo += valor;
       atualizarSaldo();
+      atualizarFatura(valor);
       mostrarIcone(valor);
 
-      // Aguarda a animação e depois redireciona
       setTimeout(() => {
         window.location.href = 'TIGER.html';
       }, 1500);
@@ -152,7 +192,6 @@
         return;
       }
 
-      // Exibe o campo para a chave PIX
       document.getElementById('chavePixContainer').style.display = 'block';
     }
 
@@ -169,18 +208,14 @@
 
       alert(`Saque de R$${valorSaque.toFixed(2)} realizado com sucesso para a chave PIX: ${chavePix}`);
 
-      // Esconde o campo da chave PIX
       document.getElementById('chavePixContainer').style.display = 'none';
-
-      // Limpa o campo de valor para saque
       document.getElementById('valorSaque').value = '';
       document.getElementById('chavePix').value = '';
 
-      // Exibe a mensagem de verificação do e-mail
       document.getElementById('mensagemEmail').textContent = `✔️ Uma verificação do PIX foi enviada para o e-mail: ${usuario.email}. Verifique sua caixa de entrada.`;
     }
 
-        // Fatura mensal
+    // Fatura mensal
     let fatura = parseFloat(localStorage.getItem('fatura')) || 0;
 
     function atualizarFatura(valor) {
@@ -189,32 +224,12 @@
       document.getElementById('fatura').textContent = fatura.toFixed(2);
     }
 
-    // Modifique ligeiramente a função depositar para incluir a fatura
-    const funcaoOriginal = depositar.toString();
-    depositar = function () {
-      const valor = parseFloat(document.getElementById('valorDeposito').value);
-      if (isNaN(valor) || valor <= 0) {
-        alert("Digite um valor válido!");
-        return;
-      }
-
-      usuario.saldo += valor;
-      atualizarSaldo();
-      atualizarFatura(valor); // Adiciona valor à fatura
-      mostrarIcone(valor);
-
-      setTimeout(() => {
-        window.location.href = 'TIGER.html';
-      }, 1500);
-    };
-
-    // Mostra a fatura na tela
+    // Exibe a fatura na tela
     const faturaDiv = document.createElement('div');
     faturaDiv.className = 'saldo';
     faturaDiv.innerHTML = '💳 Fatura a pagar no fim do mês: R$ <span id="fatura">' + fatura.toFixed(2) + '</span>';
     document.body.appendChild(faturaDiv);
 
-    
     localStorage.setItem('usuario', JSON.stringify(usuario));
   </script>
 </body>

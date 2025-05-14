@@ -19,11 +19,13 @@
       padding: 30px;
       border-radius: 10px;
       display: inline-block;
+      width: 400px;
+      max-width: 90%;
     }
 
     input, button {
       padding: 10px;
-      margin: 10px;
+      margin: 10px 0;
       font-size: 16px;
       width: 250px;
       border-radius: 5px;
@@ -47,6 +49,24 @@
 
     h1 {
       margin-bottom: 20px;
+    }
+
+    /* Responsividade para dispositivos móveis */
+    @media (max-width: 600px) {
+      body {
+        margin-top: 50px;
+        padding: 20px;
+      }
+
+      .form-container {
+        width: 100%;
+        padding: 20px;
+      }
+
+      input, button {
+        width: 100%;
+        font-size: 18px;
+      }
     }
   </style>
 </head>
