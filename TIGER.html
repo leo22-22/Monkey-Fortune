@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>🐵 Monkey Fortune - Ganho Bônus</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: url('ChatGPT Image 14_05_2025, 11_03_14.png') no-repeat center center fixed;
+      background-size: cover;
+      background-position: center;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      margin-top: 20px;
+      font-size: 36px;
+    }
+    #slot-container {
+      position: relative;
+      width: 320px;
+      margin: 30px auto;
+      background: url('ChatGPT Image 14_05_2025, 11_09_47.png') no-repeat center center;
+      background-size: cover;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    }
+    #slot {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 10px;
+    }
+    .slot {
+      font-size: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(255, 255, 255, 0.8);
+      color: #000;
+      border-radius: 8px;
+      height: 100px;
+    }
+    #monkey {
+      position: absolute;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      animation: dance 2s infinite;
+      z-index: 2;
+    }
+    @keyframes dance {
+      0% { transform: translateX(-50%) rotate(0deg); }
+      25% { transform: translateX(-50%) rotate(10deg); }
+      50% { transform: translateX(-50%) rotate(-10deg); }
+      75% { transform: translateX(-50%) rotate(10deg); }
+      100% { transform: translateX(-50%) rotate(0deg); }
+    }
+    #controls {
+      margin-top: 20px;
+    }
+    input[type="number"] {
+      font-size: 18px;
+      padding: 5px;
+      width: 100px;
+      text-align: center;
+      border-radius: 5px;
+      border: none;
+    }
+    button {
+      font-size: 20px;
+      padding: 10px 20px;
+      margin-left: 10px;
+      background-color: #ff9800;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px #c66900;
+    }
+    button:active {
+      box-shadow: none;
+      transform: translateY(4px);
+    }
+    #result {
+      font-size: 24px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    .highlight {
+      animation: highlight 1s ease-out;
+    }
+    @keyframes highlight {
+      0% { background-color: rgba(255, 255, 255, 0.8); }
+      50% { background-color: rgba(255, 215, 0, 0.8); }
+      100% { background-color: rgba(255, 255, 255, 0.8); }
+    }
+
+    #balance {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #ffd700;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+      z-index: 5;
+      border: 2px solid #ffd700;
+    }
+
+  </style>
+</head>
+<body>
+  <div id="balance">
+    Saldo: R$ <span id="saldoAtual">0.00</span>
+  </div>
+
+  <h1>🐵 Monkey Fortune - Ganho Bônus</h1>
+
+  <div id="controls">
+    <label for="bet">💰 Aposta (R$):</label>
+    <input type="number" id="bet" min="1" value="10">
+    <button onclick="spin()">GIRAR</button>
+  </div>
+
+  <div id="slot-container">
+    <div id="slot">
+      <div class="slot">🍌</div>
+      <div class="slot">🍉</div>
+      <div class="slot">🍍</div>
+      <div class="slot">🍌</div>
+      <div class="slot">🍉</div>
+      <div class="slot">🍍</div>
+      <div class="slot">🍌</div>
+      <div class="slot">🍉</div>
+      <div class="slot">🍍</div>
+    </div>
+  </div>
+
+  <p id="result"></p>
+
+  <script>
+    const symbols = ["🍌", "🍉", "🍍", "🔔", "💎", "🐵"];
+    const payouts = {
+      "🍌": 3,
+      "🍉": 5,
+      "🍍": 8,
+      "🔔": 10,
+      "💎": 25,
+      "🐵": 1  // O macaco como wild, ganha 1x
+    };
+
+    let usuario = JSON.parse(localStorage.getItem('usuario')) || { nome: 'Visitante', saldo: 0 };
+    document.getElementById('saldoAtual').textContent = usuario.saldo.toFixed(2);
+
+    function spin() {
+      const bet = parseFloat(document.getElementById("bet").value);
+      const resultText = document.getElementById("result");
+
+      if (isNaN(bet) || bet <= 0) {
+        resultText.textContent = "⚠️ Aposta inválida.";
+        return;
+      }
+
+      if (usuario.saldo < bet) {
+        resultText.textContent = "❌ Saldo insuficiente para essa aposta.";
+        return;
+      }
+
+      resultText.textContent = "🎲 Girando...";
+
+      let spinCount = 0;
+      const interval = setInterval(() => {
+        const slots = document.querySelectorAll(".slot");
+        slots.forEach(slot => {
+          const rand = Math.floor(Math.random() * symbols.length);
+          slot.textContent = symbols[rand];
+        });
+        spinCount++;
+        if (spinCount >= 10) {
+          clearInterval(interval);
+          finalizeSpin(bet);
+        }
+      }, 100);
+    }
+
+    function finalizeSpin(bet) {
+      const slots = document.querySelectorAll(".slot");
+      const result = [];
+
+      slots.forEach(slot => {
+        const rand = Math.floor(Math.random() * symbols.length);
+        const symbol = symbols[rand];
+        slot.textContent = symbol;
+        result.push(symbol);
+      });
+
+      const isBonus = Math.random() < 0.10;
+
+      if (isBonus) {
+        activateBonus(slots, bet);
+        return;
+      }
+
+      checkLines(result, bet);
+    }
+
+    function checkLines(result, bet) {
+      const lines = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], // Horizontais
+        [0, 4, 8], [2, 4, 6]              // Diagonais
+      ];
+
+      let totalMultiplier = 0; // Usado para somar os multiplicadores
+      let hasHighlight = false;
+
+      lines.forEach(line => {
+        const symbolsInLine = line.map(i => result[i]);
+        const nonSpecial = symbolsInLine.filter(sym => sym !== "🐵");
+        const unique = [...new Set(nonSpecial)];
+
+        if (nonSpecial.length === 0) return;
+
+        if (unique.length === 1 && symbolsInLine.length === 3) {
+          const symbol = unique[0];
+          if (payouts[symbol]) {
+            totalMultiplier += payouts[symbol]; // Soma os multiplicadores
+            line.forEach(i => document.querySelectorAll('.slot')[i].classList.add('highlight'));
+            hasHighlight = true;
+          }
+        }
+      });
+
+      const allEqual = result.every(sym => sym === result[0] && sym !== "🐵");
+      const hasJackpot = allEqual && result.length === 9;
+
+      const resultText = document.getElementById("result");
+      const total = hasJackpot ? bet * 100 : bet * totalMultiplier;  // Multiplica a soma dos multiplicadores pelo valor da aposta
+
+      if (hasJackpot) {
+        resultText.textContent = `🎉 JACKPOT! Você ganhou R$ ${total.toFixed(2)}!`;
+      } else if (totalMultiplier > 0) {
+        resultText.textContent = `✨ Você ganhou R$ ${total.toFixed(2)} com combinações!`;
+      } else {
+        resultText.textContent = `😢 Nenhum ganho. Tente novamente.`;
+      }
+
+      if (hasHighlight) {
+        setTimeout(() => {
+          document.querySelectorAll('.slot').forEach(slot => slot.classList.remove('highlight'));
+        }, 2000);
+      }
+
+      // Atualiza o saldo após a aposta
+      usuario.saldo += total - bet;
+      localStorage.setItem('usuario', JSON.stringify(usuario));
+      document.getElementById('saldoAtual').textContent = usuario.saldo.toFixed(2);
+    }
+
+    function activateBonus(slots, bet) {
+      const bonusMultiplier = Math.floor(Math.random() * 5) + 1;
+      const totalBonus = bet * bonusMultiplier;
+      document.getElementById("result").textContent = `🎉 Bônus ativado! Você ganhou um multiplicador de x${bonusMultiplier}! Total: R$ ${totalBonus.toFixed(2)}`;
+      
+      usuario.saldo += totalBonus;
+      localStorage.setItem('usuario', JSON.stringify(usuario));
+      document.getElementById('saldoAtual').textContent = usuario.saldo.toFixed(2);
+    }
+  </script>
+</body>
+</html>
