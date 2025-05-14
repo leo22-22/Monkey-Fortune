@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Jogo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #fffbe0;
+      padding: 30px;
+    }
+
+    .saldo {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px;
+    }
+
+    .icon-container {
+      margin-top: 20px;
+      height: 100px;
+      position: relative;
+    }
+
+    .money-icon {
+      position: absolute;
+      font-size: 24px;
+      animation: rise 1.5s ease-out forwards;
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(-20px);
+      }
+    }
+
+    .aviso {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #444;
+      background-color: #ffe58a;
+      padding: 15px;
+      border-radius: 8px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .chave-pix-container {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .chave-pix-container input {
+      width: 300px;
+    }
+
+    .mensagem-email {
+      font-size: 16px;
+      color: #0073e6;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Bem-vindo(a), <span id="nomeUsuario"></span></h1>
+  <div class="saldo">Saldo: R$ <span id="saldo">0.00</span></div>
+
+  <div>
+    <input type="number" id="valorDeposito" placeholder="Valor do depósito" />
+    <button onclick="depositar()">Depositar</button>
+  </div>
+
+  <div>
+    <input type="number" id="valorSaque" placeholder="Valor para sacar" />
+    <button onclick="iniciarSaque()">Sacar</button>
+  </div>
+
+  <div class="chave-pix-container" id="chavePixContainer">
+    <input type="text" id="chavePix" placeholder="Insira a chave PIX" />
+    <button onclick="sacar()">Confirmar Saque</button>
+  </div>
+
+  <div class="icon-container" id="icones"></div>
+
+  <div class="aviso">
+    ⚠️ O depósito é automático e será creditado diretamente no seu saldo.  
+    No final de cada mês, será cobrado o valor total de todos os depósitos efetuados.
+  </div>
+
+  <div class="mensagem-email" id="mensagemEmail"></div>
+
+  <script>
+    let usuario = JSON.parse(localStorage.getItem('usuario')) || { nome: 'Visitante', saldo: 0, email: 'usuario@example.com' };
+    document.getElementById('nomeUsuario').textContent = usuario.nome;
+    document.getElementById('saldo').textContent = usuario.saldo.toFixed(2);
+
+    function atualizarSaldo() {
+      document.getElementById('saldo').textContent = usuario.saldo.toFixed(2);
+      localStorage.setItem('usuario', JSON.stringify(usuario));
+    }
+
+    function depositar() {
+      const valor = parseFloat(document.getElementById('valorDeposito').value);
+      if (isNaN(valor) || valor <= 0) {
+        alert("Digite um valor válido!");
+        return;
+      }
+
+      usuario.saldo += valor;
+      atualizarSaldo();
+      mostrarIcone(valor);
+
+      // Aguarda a animação e depois redireciona
+      setTimeout(() => {
+        window.location.href = 'TIGER.html';
+      }, 1500);
+    }
+
+    function mostrarIcone(valor) {
+      const icone = document.createElement('div');
+      icone.className = 'money-icon';
+      icone.style.left = `${Math.random() * 80 + 10}%`;
+      icone.textContent = `💰 +R$${valor.toFixed(2)}`;
+
+      const container = document.getElementById('icones');
+      container.appendChild(icone);
+
+      setTimeout(() => container.removeChild(icone), 1500);
+    }
+
+    function iniciarSaque() {
+      const valorSaque = parseFloat(document.getElementById('valorSaque').value);
+      if (isNaN(valorSaque) || valorSaque <= 0) {
+        alert("Digite um valor válido para o saque!");
+        return;
+      }
+
+      if (valorSaque > usuario.saldo) {
+        alert("Saldo insuficiente para o saque.");
+        return;
+      }
+
+      // Exibe o campo para a chave PIX
+      document.getElementById('chavePixContainer').style.display = 'block';
+    }
+
+    function sacar() {
+      const chavePix = document.getElementById('chavePix').value.trim();
+      if (!chavePix) {
+        alert("Por favor, insira uma chave PIX válida.");
+        return;
+      }
+
+      const valorSaque = parseFloat(document.getElementById('valorSaque').value);
+      usuario.saldo -= valorSaque;
+      atualizarSaldo();
+
+      alert(`Saque de R$${valorSaque.toFixed(2)} realizado com sucesso para a chave PIX: ${chavePix}`);
+
+      // Esconde o campo da chave PIX
+      document.getElementById('chavePixContainer').style.display = 'none';
+
+      // Limpa o campo de valor para saque
+      document.getElementById('valorSaque').value = '';
+      document.getElementById('chavePix').value = '';
+
+      // Exibe a mensagem de verificação do e-mail
+      document.getElementById('mensagemEmail').textContent = `✔️ Uma verificação do PIX foi enviada para o e-mail: ${usuario.email}. Verifique sua caixa de entrada.`;
+    }
+
+        // Fatura mensal
+    let fatura = parseFloat(localStorage.getItem('fatura')) || 0;
+
+    function atualizarFatura(valor) {
+      fatura += valor;
+      localStorage.setItem('fatura', fatura.toFixed(2));
+      document.getElementById('fatura').textContent = fatura.toFixed(2);
+    }
+
+    // Modifique ligeiramente a função depositar para incluir a fatura
+    const funcaoOriginal = depositar.toString();
+    depositar = function () {
+      const valor = parseFloat(document.getElementById('valorDeposito').value);
+      if (isNaN(valor) || valor <= 0) {
+        alert("Digite um valor válido!");
+        return;
+      }
+
+      usuario.saldo += valor;
+      atualizarSaldo();
+      atualizarFatura(valor); // Adiciona valor à fatura
+      mostrarIcone(valor);
+
+      setTimeout(() => {
+        window.location.href = 'TIGER.html';
+      }, 1500);
+    };
+
+    // Mostra a fatura na tela
+    const faturaDiv = document.createElement('div');
+    faturaDiv.className = 'saldo';
+    faturaDiv.innerHTML = '💳 Fatura a pagar no fim do mês: R$ <span id="fatura">' + fatura.toFixed(2) + '</span>';
+    document.body.appendChild(faturaDiv);
+
+    
+    localStorage.setItem('usuario', JSON.stringify(usuario));
+  </script>
+</body>
+</html>

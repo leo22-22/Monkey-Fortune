@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cadastro</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 100px;
+      background-image: url('ChatGPT Image 14_05_2025, 11_03_14.png'); /* imagem de macaco */
+      background-size: cover;
+      background-position: center;
+      color: white;
+    }
+
+    .form-container {
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 30px;
+      border-radius: 10px;
+      display: inline-block;
+    }
+
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+      width: 250px;
+      border-radius: 5px;
+      border: none;
+    }
+
+    input::placeholder {
+      color: #999;
+    }
+
+    button {
+      background-color: #ffc107;
+      color: #000;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #e0a800;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h1>Cadastro</h1>
+    <input type="text" id="nome" placeholder="Nome" /><br>
+    <input type="email" id="email" placeholder="Email" /><br>
+    <input type="text" id="cpf" placeholder="CPF" /><br>
+    <input type="text" id="telefone" placeholder="Telefone" /><br>
+    <button onclick="cadastrar()">Cadastrar</button>
+  </div>
+
+  <script>
+    // Função para verificar se o CPF é válido (11 dígitos numéricos)
+    function validarCPF(cpf) {
+      const regex = /^\d{11}$/;
+      return regex.test(cpf);
+    }
+
+    // Função para verificar se o e-mail é válido
+    function validarEmail(email) {
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return regex.test(email);
+    }
+
+    // Função para verificar se o telefone é válido (11 dígitos)
+    function validarTelefone(telefone) {
+      const regex = /^\d{11}$/;
+      return regex.test(telefone);
+    }
+
+    function cadastrar() {
+      const nome = document.getElementById('nome').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const cpf = document.getElementById('cpf').value.trim();
+      const telefone = document.getElementById('telefone').value.trim();
+
+      // Validações dos campos
+      if (!nome || !email || !cpf || !telefone) {
+        alert('Preencha todos os campos corretamente!');
+        return;
+      }
+
+      if (!validarEmail(email)) {
+        alert('O e-mail informado não é válido!');
+        return;
+      }
+
+      if (!validarCPF(cpf)) {
+        alert('O CPF informado não é válido!');
+        return;
+      }
+
+      if (!validarTelefone(telefone)) {
+        alert('O telefone informado não é válido! Deve conter 11 dígitos.');
+        return;
+      }
+
+      // Se tudo estiver correto, armazena as informações no localStorage
+      localStorage.setItem('usuario', JSON.stringify({
+        nome,
+        email,
+        cpf,
+        telefone,
+        saldo: 0
+      }));
+
+      // Redireciona para a página do jogo
+      window.location.href = 'jogo.html';
+    }
+  </script>
+</body>
+</html>
